@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      try {
+        if (localStorage.getItem("auroraclub-theme") === "light") {
+          document.documentElement.dataset.theme = "light";
+        }
+      } catch (e) {}
+    </script>
+    <meta name="theme-color" content="#101010" />
+    <meta
+      name="description"
+      content="Sua arte. Sua peça. Suas regras. Personalize roupas em modelos humanos, sem cadastro."
+    />
+    <meta property="og:title" content="AuroraClub — Vista suas ideias" />
+    <meta
+      property="og:image"
+      content="/images/banners/auroraclub-campaign-hero.webp"
+    />
+    <link rel="icon" href="/favicon.svg" />
+    <title>AuroraClubx'</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

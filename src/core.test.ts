@@ -1,0 +1,8 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {imageFormat,initial,layer,parseProject,hit} from './core';
+test('valida assinatura, extensão e limite de upload',()=>{const png=Uint8Array.from([137,80,78,71,13,10,26,10]);assert.equal(imageFormat('arte.PNG',10485760,png),'image/png');assert.throws(()=>imageFormat('arte.png',10485761,png));assert.throws(()=>imageFormat('arte.jpg',8,png));assert.throws(()=>imageFormat('arte.png',8,new Uint8Array(8)));assert.equal(imageFormat('arte.jpeg',3,Uint8Array.from([255,216,255])),'image/jpeg');});
+test('serializa frente e costas sem compartilhar camadas',()=>{const p=initial();p.layers.frente.push(layer('text'));const restored=parseProject(JSON.stringify(p));assert.equal(restored.layers.frente.length,1);assert.equal(restored.layers.costas.length,0);assert.deepEqual(restored,p);});
+test('rejeita JSON perigoso, referências incompatíveis e transformações inválidas',()=>{const p=initial();p.layers.frente.push(layer('text'));for(const bad of [{...p,model:9},{...p,product:'polo'},{...p,version:2},{...p,layers:{...p.layers,frente:[{...p.layers.frente[0],w:-1}]}},{...p,layers:{...p.layers,frente:[{...p.layers.frente[0],kind:'image',src:'javascript:alert(1)'}]}}])assert.throws(()=>parseProject(JSON.stringify(bad)));});
+test('hit test acompanha rotação e transformação fora da região de referência',()=>{const l=layer('text');l.x=2;l.y=-1;l.rotation=90;assert.ok(hit(l,2,-1));assert.ok(!hit(l,0,0));assert.ok(!hit(l,2.5,-1));});
+test('preserva cores, transparência configurada e recorte não destrutivo',()=>{const p=initial(),l=layer('shape');l.color='#ff0033';l.opacity=.4;l.crop=[.1,.2,.8,.7];p.layers.costas.push(l);assert.deepEqual(parseProject(JSON.stringify(p)).layers.costas[0],l);});
